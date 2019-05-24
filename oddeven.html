@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		#even{
+			float:left;
+		}
+		#odd{
+			margin-left: 100px;
+		}
+	</style>
+</head>
+<body>
+	Enter Number: <input type="number" id="input">
+		<button class="submit">Submit</button><br>
+		<div id="even"><b>Even</b><br></div>
+		<div id="odd"><b>Odd</b><br></div>
+	<script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous">
+    </script>
+    <script>
+    	$(document).ready(function(){
+    		$(".submit").click(function(){
+
+    			let odd =[];
+    			let even = [];
+    			let input = $("#input").val();
+    			input = parseInt(input);
+
+		 		for(var i = 1;i < input+1;i++)
+    			{
+    				if(i%2 == 0)
+                    {
+                        even.push(i);
+                    } 
+                    else
+                    {
+                        odd.push(i);
+                    }
+    			}
+
+    			jQuery.each(even, function(i, val){
+    				$("#even").append(val + '<br>');
+        		});
+
+        		jQuery.each(odd, function(i, val){
+    				$("#odd").append(val + '<br>');
+        		});
+
+		 	});
+    	});
+    </script>
+
+</body>
+</html>

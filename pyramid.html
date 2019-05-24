@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	Enter Number of rows: <input type="number" id="input">
+		<button class="submit">Submit</button><br>
+		<div id="pyramid"></div>
+	<script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous">
+    </script>
+    <script>
+    	$(document).ready(function(){
+    		$(".submit").click(function(){
+                $("div").html("");
+                let rows = $("#input").val();
+
+                for(var i=0;i<rows;i++) {
+                let output="";
+                    for(var j=0;j<rows-i;j++) {
+                        output+= "&nbsp";
+                    }
+                    for(var k=0;k<=i;k++) {    
+                       output += "*";
+                    }
+                    $("#pyramid").append(output+"<br>"); 
+                }  
+		 	});
+    	});
+    </script>
+
+</body>
+</html>

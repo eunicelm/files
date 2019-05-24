@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	Enter word: <input type="text" id="input">
+		<button class="submit">Submit</button><br>
+		<div id="word"></div>
+	<script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous">
+    </script>
+    <script>
+    	$(document).ready(function(){
+    		$(".submit").click(function(){
+                $("div").html("");
+
+                let word = $("#input").val();
+                let length = word.length;
+                let output=[];
+
+                for(var i=0;i<length;i++) {
+                    switch (word[i]) {
+                    case 'a':
+                    case 'A':
+                        output[i] = "4";
+                        break;
+                    case 'e':
+                    case 'E':
+                        output[i] = "3";
+                        break;
+                    case 'i':
+                    case 'I':
+                        output[i] = "1";
+                        break;
+                    case 'o':
+                    case 'O':
+                        output[i] = "0";
+                        break;
+                    case 'u':
+                    case 'U':
+                        output[i] = "5";
+                        break;
+                    default:
+                        output[i] = word[i];
+                    }
+                }
+                $("#word").append(output); 
+		 	});
+    	});
+    </script>
+
+</body>
+</html>

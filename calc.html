@@ -1,0 +1,141 @@
+  <!DOCTYPE html>
+<html>
+<head>
+    <style>
+        button{
+            width: 45px;
+            height: 35px;
+            font-size:20px;
+            background: #B0AFAF;
+            margin:2px;
+        }
+        #compute{
+            height: 10px;
+            font-size:25px;
+            text-align: right;
+        }
+        #ans{
+            color: #797979;
+            height: 10px;
+            font-size:17px;
+            text-align: right;
+        }
+        table{
+            padding:8px;
+            background: #EDEDED;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <table border="1" align="center">
+        <tr><td>
+                <p style="float:left; margin-left:100px; color:#797979;">Ans:</p>
+                <p id="ans"><p>
+                <p id="compute"></p>
+        </td></tr>
+        <tr><td>
+            <button class = "btn" value="7">7</button>
+            <button class = "btn" value="8">8</button>
+            <button class = "btn" value="9">9</button>
+            <button class = "btn" value="/">/</button>
+        </td>
+        </tr>
+
+        <tr><td>
+            <button class = "btn" value="4">4</button>
+            <button class = "btn" value="5">5</button>
+            <button class = "btn" value="6">6</button>
+            <button class = "btn" value="X">X</button>
+        </td>
+        </tr>
+
+        <tr><td>
+            <button class = "btn" value="1">1</button>
+            <button class = "btn" value="2">2</button>
+            <button class = "btn" value="3">3</button>
+            <button class = "btn" value="+">+</button>
+        </td>
+        </tr>
+
+        <tr><td>
+            <button class = "btn" value="C">C</button>
+            <button class = "btn" value="0">0</button>
+            <button class = "btn" value="=">=</button>
+            <button class = "btn" value="-">-</button>
+        </td>
+        </tr>
+    </table>
+      <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+     <script>
+
+        let num1 = '';
+        let num2 = '';
+        let operator = '';
+        let total = '';
+        let flag = false;
+        $(document).ready(function() {
+            $('.btn').on('click', function(e) {
+                let button = $(this).val();
+                if (button >= '0' && button <= '9') {
+                    Number(button);   
+                }else if (button == "C"){
+                    $('#compute').text("");
+                    $('#ans').text("");
+                    flag = false;
+                    num1 = '';
+                    num2 = '';
+                    total ='';
+                    operator = '';
+                } else {
+                    $('#compute').text("");
+                    flag = true;
+                    Operator(button);
+                }
+            });
+        });
+
+        function Number(num) {
+            if(flag === false)
+            {
+                num1 += num;
+                $('#compute').append(num);
+            } else {
+                num2 += num;
+                $('#compute').append(num);
+            }
+            
+        }
+        function Operator(oper) {
+            if (operator === '') {
+                operator = oper;
+            } else {
+                switch (operator) {
+                case '+':
+                    total = parseInt(num1) + parseInt(num2);
+                    $('#ans').text(total);
+                    break;
+                case '-':
+                    total = parseInt(num1) - parseInt(num2);
+                    $('#ans').text(total);
+                    break;
+                case '/':
+                    total = parseInt(num1) / parseInt(num2);
+                    $('#ans').text(total);
+                    break;
+                case 'X':
+                    total = parseInt(num1) * parseInt(num2);
+                    $('#ans').text(total);
+                    break;
+            }
+                num1 = total;
+                num2 = '';
+                operator = oper;
+            }
+        }
+    </script>
+</body>
+</html>
