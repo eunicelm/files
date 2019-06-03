@@ -1,0 +1,312 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.17134}\viewkind4\uc1 
+\pard\sl240\slmult1\b\f0\fs22\lang9 route\b0\par
+Auth::routes();\par
+Route::resource('/student', 'StudentController');\par
+\par
+\b to display the name of the authenticated user\b0\par
+\{\{ Auth::user()->name \}\}\par
+\par
+\b SEARCH\par
+\b0 <div class="col-sm-3 col-md-3 pull-right">\par
+        <form class="navbar-form" role="search" action=""\{\{route('student.store')\}\}"" method="get">\par
+        <div class="input-group">\par
+            <input type="search" class="form-control" placeholder="Search" name="query" id="srch-term">\par
+            <div class="input-group-btn">\par
+                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>\par
+            </div>\par
+        </div>\par
+        </form>\par
+        </div>\par
+\par
+-controller\par
+public function index()\par
+  \{\par
+    $q = Input::get ( 'query' );\par
+\par
+    $students = students::when($q, function ($query, $q) \{\par
+        return $query->where('name', 'LIKE', '%' . $q . '%' )\par
+        ->orWhere( 'email', 'LIKE', '%' . $q . '%' );\par
+    \})->get();\par
+\par
+    return view('home',compact("students"));\par
+  \}\par
+\par
+\par
+-home.blade.php\par
+<div class="container">\par
+              <table class="table table-striped">\par
+                  <thead>\par
+                      <tr>\par
+                        <th>ID</th>\par
+                        <th>Name</th>\par
+                        <th>Email</th>\par
+                        <th>School</th>\par
+                        <th>Course</th>\par
+                        <th>Birthdate</th>\par
+                        <th>Age</th>\par
+                        <th>Action</th>\par
+                      </tr>\par
+                  </thead>\par
+                  <tbody>\par
+\par
+                      @forelse($students as $student)\par
+                      <tr>\par
+                        <td>\{\{$student->id\}\}</td>\par
+                        <td>\{\{$student->name\}\}</td>\par
+                        <td>\{\{$student->email\}\}</td>\par
+                        <td>\{\{$student->school\}\}</td>\par
+                        <td>\{\{$student->course\}\}</td>\par
+                        <td>\{\{$student->birthday\}\}</td>\par
+                        <td>\{\{$student->age\}\}</td>\par
+                        <td>\par
+                          <button class="btn btn-info" data-id="\{\{$student->id\}\}" data-name="\{\{$student->name\}\}" data-email="\{\{$student->email\}\}" data-school="\{\{$student->school\}\}" data-course="\{\{$student->course\}\}" data-birthdate="\{\{$student->birthday\}\}" data-age="\{\{$student->age\}\}" data-toggle="modal" data-target="#edit">Edit</button>\par
+                          <button class="btn btn-danger" data-id="\{\{$student->id\}\}" data-toggle="modal" data-target="#delete">Delete</button>\par
+                        </td>\par
+                      </tr>\par
+                      @empty\par
+                        <tr>\par
+                          <td colspan = "7">No details found!</td>\par
+                        </tr>\par
+                      @endforelse\par
+\par
+            </tbody>\par
+        </table>\par
+    </div>\par
+\par
+\b ADD\b0\par
+-button\par
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_modal" style="float:left">\par
+ \tab         Add New Student\par
+      </button>\par
+\par
+-modal\par
+<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">\par
+  <div class="modal-dialog" role="document">\par
+    <div class="modal-content">\par
+      <div class="modal-header">\par
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\par
+        <h4 class="modal-title" id="myModalLabel">New Category</h4>\par
+      </div>\par
+      <form action="\{\{route('student.store')\}\}" method="post">\par
+      \tab\tab\{\{csrf_field()\}\}\par
+\tab       <div class="modal-body">\par
+\tab\tab\tab\tab @include('forms')\par
+        @if ($errors->any())\par
+            <div class="alert alert-danger">\par
+                <ul>\par
+                    @foreach ($errors->all() as $error)\par
+                        <li>\{\{ $error \}\}</li>\par
+                    @endforeach\par
+                </ul>\par
+            </div>\par
+        @endif\par
+      </div>\par
+\tab       <div class="modal-footer">\par
+\tab         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>\par
+\tab         <button type="submit" class="btn btn-primary">Save</button>\par
+\tab       </div>\par
+      </form>\par
+    </div>\par
+  </div>\par
+</div>\par
+\par
+-controller\par
+public function store(Request $request)\{\par
+\par
+//validation\par
+    $request->validate([\par
+      'name' => 'required|max:100',\par
+      'email' => 'required|unique:students',\par
+      'school' => 'required',\par
+      'course' => 'required',\par
+      'birthdate' => 'required',\par
+      'age' => 'required',\par
+    ]);\par
+\par
+    $student = new students;\par
+    $student->name = $request->Input('name');\par
+    $student->email = $request->Input('email');\par
+    $student->school = $request->Input('school');\par
+    $student->course = $request->Input('course');\par
+    $student->birthday = $request->Input('birthdate');\par
+    $student->age = $request->Input('age');\par
+\par
+    $student->save();\par
+\par
+    return view('home');\par
+  \}\par
+\par
+-script (to show the modal if there's an error with validating the inputs\par
+@if ($errors->any())\par
+          $('#add_modal').modal('show');\par
+        @endif\par
+\par
+\b EDIT\par
+\b0 -button\b\par
+\b0 <button class="btn btn-info" data-id="\{\{$student->id\}\}" data-name="\{\{$student->name\}\}" data-email="\{\{$student->email\}\}" data-school="\{\{$student->school\}\}" data-course="\{\{$student->course\}\}" data-birthdate="\{\{$student->birthday\}\}" data-age="\{\{$student->age\}\}" data-toggle="modal" data-target="#edit">Edit</button>\par
+\par
+-modal\par
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">\par
+    <div class="modal-dialog" role="document">\par
+      <div class="modal-content">\par
+        <div class="modal-header">\par
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\par
+          <h4 class="modal-title" id="myModalLabel">Edit Category</h4>\par
+        </div>\par
+        <form action="\{\{route('student.update','student')\}\}" method="post">\par
+        \tab\tab\{\{method_field('patch')\}\}\par
+        \tab\tab\{\{csrf_field()\}\}\par
+  \tab       <div class="modal-body">\par
+  \tab       \tab\tab <input type="hidden" name="id" id="id" value="">\par
+  \tab\tab\tab\tab @include('forms')\par
+  \tab       </div>\par
+  \tab       <div class="modal-footer">\par
+  \tab         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>\par
+  \tab         <button type="submit" class="btn btn-primary">Save Changes</button>\par
+  \tab       </div>\par
+        </form>\par
+      </div>\par
+    </div>\par
+  </div>\par
+\par
+-controller\par
+public function update(Request $request)\{\par
+    $student = students::findOrFail($request->id);\par
+    $student->name = $request->Input('name');\par
+    $student->email = $request->Input('email');\par
+    $student->school = $request->Input('school');\par
+    $student->course = $request->Input('course');\par
+    $student->birthday = $request->Input('birthdate');\par
+    $student->age = $request->Input('age');\par
+\par
+    $student->save();\par
+    return back();\par
+  \}\par
+\par
+  public function edit($id)\{\par
+    $students = student::find($id);\par
+    return view("home")->with("student",$students);\par
+  \}\par
+\par
+-script\par
+$('#edit').on('show.bs.modal', function (event) \{\par
+          var button = $(event.relatedTarget) // Button that triggered the modal\par
+          var name = button.data('name')\par
+          var email = button.data('email')\par
+          var school = button.data('school')\par
+          var course = button.data('course')\par
+          var birthdate = button.data('birthdate')\par
+          var age = button.data('age')\par
+          var id = button.data('id')\par
+          var modal = $(this)\par
+\par
+          modal.find('.modal-body #name').val(name)\par
+          modal.find('.modal-body #email').val(email)\par
+          modal.find('.modal-body #school').val(school)\par
+          modal.find('.modal-body #course').val(course)\par
+          modal.find('.modal-body #birthdate').val(birthdate)\par
+          modal.find('.modal-body #age').val(age)\par
+          modal.find('.modal-body #id').val(id)\par
+        \});\par
+\par
+\b DELETE\par
+-\b0 button\par
+<button class="btn btn-danger" data-id="\{\{$student->id\}\}" data-toggle="modal" data-target="#delete">Delete</button>\par
+\par
+-modal\par
+<div class="modal modal-danger fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">\par
+  <div class="modal-dialog" role="document">\par
+    <div class="modal-content">\par
+      <div class="modal-header">\par
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\par
+        <h4 class="modal-title text-center" id="myModalLabel">Delete Confirmation</h4>\par
+      </div>\par
+      <form action="\{\{route('student.destroy','student')\}\}" method="post">\par
+      \tab\tab\{\{method_field('delete')\}\}\par
+      \tab\tab\{\{csrf_field()\}\}\par
+\tab       <div class="modal-body">\par
+\tab\tab\tab\tab <p class="text-center">\par
+\tab\tab\tab\tab\tab Are you sure you want to delete this?\par
+\tab\tab\tab\tab </p>\par
+\tab       \tab\tab <input type="hidden" name="id" id="delete_id" value="">\par
+\tab       </div>\par
+\tab       <div class="modal-footer">\par
+\tab         <button type="button" class="btn btn-success" data-dismiss="modal">No, Cancel</button>\par
+\tab         <button type="submit" class="btn btn-warning">Yes, Delete</button>\par
+\tab       </div>\par
+      </form>\par
+    </div>\par
+  </div>\par
+</div>\par
+\par
+-controller\par
+public function destroy(Request $request)\{\par
+      $student = students::findOrFail($request->id);\par
+      $student->delete();\par
+      return back();\par
+  \}\par
+\b\par
+\b0 -script\par
+$('#delete').on('show.bs.modal', function (event) \{\par
+\par
+          var button = $(event.relatedTarget)\par
+          var id = button.data('id')\par
+          var modal = $(this)\par
+\par
+          modal.find('.modal-body #delete_id').val(id);\par
+        \});\par
+\par
+\b VIEW\par
+\par
+-\b0 controller\par
+public function show($id)\{\par
+    $student = students::find($id);\par
+\par
+    return view("home")->with("students",$student);\par
+  \}\par
+\par
+-home.blade.php\par
+<div class="container">\par
+              <table class="table table-striped">\par
+                  <thead>\par
+                      <tr>\par
+                        <th>ID</th>\par
+                        <th>Name</th>\par
+                        <th>Email</th>\par
+                        <th>School</th>\par
+                        <th>Course</th>\par
+                        <th>Birthdate</th>\par
+                        <th>Age</th>\par
+                        <th>Action</th>\par
+                      </tr>\par
+                  </thead>\par
+                  <tbody>\par
+\par
+                      @forelse($students as $student)\par
+                      <tr>\par
+                        <td>\{\{$student->id\}\}</td>\par
+                        <td>\{\{$student->name\}\}</td>\par
+                        <td>\{\{$student->email\}\}</td>\par
+                        <td>\{\{$student->school\}\}</td>\par
+                        <td>\{\{$student->course\}\}</td>\par
+                        <td>\{\{$student->birthday\}\}</td>\par
+                        <td>\{\{$student->age\}\}</td>\par
+                        <td>\par
+                          <button class="btn btn-info" data-id="\{\{$student->id\}\}" data-name="\{\{$student->name\}\}" data-email="\{\{$student->email\}\}" data-school="\{\{$student->school\}\}" data-course="\{\{$student->course\}\}" data-birthdate="\{\{$student->birthday\}\}" data-age="\{\{$student->age\}\}" data-toggle="modal" data-target="#edit">Edit</button>\par
+                          <button class="btn btn-danger" data-id="\{\{$student->id\}\}" data-toggle="modal" data-target="#delete">Delete</button>\par
+                        </td>\par
+                      </tr>\par
+                      @empty\par
+                        <tr>\par
+                          <td colspan = "7">No details found!</td>\par
+                        </tr>\par
+                      @endforelse\par
+\par
+            </tbody>\par
+        </table>\par
+    </div>\b\par
+\b0\par
+\par
+}
+ 
